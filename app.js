@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const path = require('path');
 const express = require('express');
 const AppError = require('./utils/appError');
+
 const app = express();
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -17,6 +18,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const cors = require('cors');
+const compression = require('compression');
 
 app.enable('trust proxy');
 
@@ -45,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Development logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-console.log(process.env.NODE_ENV);
+//console.log(process.env.NODE_ENV);
 // Limit requests from same ip
 const limiter = rateLimit({
   max: 100,
@@ -77,11 +79,12 @@ app.use(
     ],
   })
 );
-app.use((req, res, next) => {
-  // console.log(req.headers);
-  //console.log(req.cookies);
-  next();
-});
+app.use(compression());
+// app.use((req, res, next) => {
+//   // console.log(req.headers);
+//   //console.log(req.cookies);
+//   next();
+// });
 
 // Routes
 
