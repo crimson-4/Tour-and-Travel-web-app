@@ -1,5 +1,7 @@
 const express = require('express');
 const {
+  uploadTourImages,
+  resizeTourImages,
   getTours,
   aliasTopTours,
   getTour,
@@ -38,19 +40,20 @@ tourRouter.route('/distances/:latlng/unit/:unit').get(getDistances);
 tourRouter.route('/top-5-cheap').get(aliasTopTours, getTours);
 
 tourRouter.route('/tours-stats').get(getTourStats);
-tourRouter
-  .route('/monthly-plan/:year')
-  .get(
-    authController.protect,
-    authController.restrictTo('admin', 'lead-guide', 'guide'),
-    getMonthlyPlan
-  );
+tourRouter.route('/monthly-plan/:year').get(
+  authController.protect,
+
+  authController.restrictTo('admin', 'lead-guide', 'guide'),
+  getMonthlyPlan
+);
 
 tourRouter
   .route('/:id')
   .get(authController.protect, getTour)
   .patch(
     authController.protect,
+    uploadTourImages,
+    resizeTourImages,
     authController.restrictTo('admin', 'lead-guide'),
     patchTour
   )

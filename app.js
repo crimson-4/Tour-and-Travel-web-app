@@ -15,30 +15,32 @@ const userRouter = require('./routes/userRoutes');
 const hpp = require('hpp');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
+const cors = require('cors');
+
+app.enable('trust proxy');
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Global middlewares
+app.use(cors());
+app.options('*', cors());
 
 //Set Securi ty http headers
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(helmet());
-app.use((req, res, next) => {
-  res.setHeader(
-    'Content-Security-Policy',
-    "script-src  'self' https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js",
-    "script-src-elem 'self' https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js",
-    "style-src 'self' cdnjs.cloudflare.com; localhost:8000;",
-    "img-src 'self'"
-  );
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     'Content-Security-Policy',
+//     "script-src-elem 'self' https://js.stripe.com/v3/",
+//     //"script-src-elem 'self' https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js",
 
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
-});
+//     "img-src 'self'"
+//   );
+
+//   next();
+// });
 
 // Development logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
@@ -77,7 +79,7 @@ app.use(
 );
 app.use((req, res, next) => {
   // console.log(req.headers);
-  console.log(req.cookies);
+  //console.log(req.cookies);
   next();
 });
 
@@ -93,6 +95,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 //console.log('hi');
 app.all('*', (req, res, next) => {
   //   const err = new Error(`Can't find ${req.originalUrl} on this server!`);
